@@ -25,6 +25,26 @@ async function run() {
     const orderCollection = database.collection("Orders");
     const reviewsCollection = database.collection("Reviews");
 
+    // Get multiple Products from the database
+    app.get("/products", async (req, res) => {
+      const cursor = productsCollection.find({});
+      const products = await cursor.toArray();
+      res.json(products);
+    });
+    // Add Products  API To the database
+    app.post("/products", async (req, res) => {
+      const products = req.body;
+      const result = await productsCollection.insertOne(products);
+      res.json(result);
+    });
+    // DELETE PRODUCT on Products API
+    app.delete("/product/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(query);
+
+      res.json(result);
+    });
     // check user info if found then ignore if not found then add user info to our database. this is work while use google popup login & emailPass login or register
 
     app.put("/users", async (req, res) => {
