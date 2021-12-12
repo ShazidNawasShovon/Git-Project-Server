@@ -25,6 +25,42 @@ async function run() {
     const orderCollection = database.collection("Orders");
     const reviewsCollection = database.collection("Reviews");
 
+    // Add Order API To the database
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
+      res.json(result);
+    });
+    // GET ALL ORDERS FROM Orders API Database
+    app.get("/orders/manageAllOrders", async (req, res) => {
+      const query = {};
+      const cursor = orderCollection.find(query);
+      const allOrders = await cursor.toArray();
+      res.json(allOrders);
+    });
+
+    // UPDATE STATUS From Orders Collection API
+    app.put("/status/:id", async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+      const query = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: data.isStatus,
+        },
+      };
+      const result = await orderCollection.updateOne(query, updateDoc);
+      res.json(result);
+    });
+
+    // DELETE ORDER API
+    app.delete("/order/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.json(result);
+    });
+
     // check user info if found then ignore if not found then add user info to our database. this is work while use google popup login & emailPass login or register
 
     app.put("/users", async (req, res) => {
